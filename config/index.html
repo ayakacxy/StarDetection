@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>星鉴：多域多模型的机器生成文本检测系统</title>
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="vendor/index.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .custom-file-input {
+            display: none;
+        }
+
+        .custom-file-label {
+            border: 1px solid #4e73df;
+            padding: 6px 12px;
+            color: white;
+            background-color: #4e73df;
+            cursor: pointer;
+        }
+
+        .custom-file-label:hover {
+            background-color: #2e59d9;
+        }
+
+        .file-link {
+            display: block;
+            width: 90%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-sizing: border-box;
+        }
+
+        #loadingIndicator {
+            display: none;
+            color: #4e73df;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .char-count {
+            position: absolute;
+            font-size: 14px;
+            color: #6c757d;
+            pointer-events: block;
+        }
+
+        .button-container {
+            display: flex;
+            align-items: flex-start;
+            /* 对齐到父容器的顶部 */
+            gap: 8px;
+            /* 调整按钮之间的间距 */
+            margin-top: 50px;
+            /* 调整与上方内容的间距 */
+        }
+
+        #resultOutput {
+            flex-grow: 1;
+            /* 使textarea占据剩余空间 */
+            max-width: calc(100% - 100px);
+            /* 设置最大宽度，减去按钮的宽度 */
+            min-width: 200px;
+            /* 设置最小宽度 */
+        }
+
+        .btn {
+            width: 40px;
+            /* 设置按钮的固定宽度 */
+            height: 40px;
+            /* 设置按钮的固定高度 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-radius: 50%;
+            /* 设置按钮为圆形 */
+            margin-top: 16px;
+            /* 调整按钮与顶部的距离，使其与textarea对齐 */
+
+        }
+
+        .styled-text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            /* 文本分析框的字体大小 */
+            line-height: 2.0;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+
+        .card-body {
+            min-height: 400px;
+        }
+    </style>
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-search" style="font-size: 3em;transform: rotate(15deg);"></i>
+                    <i class="fas fa-star"
+                        style="position: absolute; top: 36%; left: 43.5%; transform: translate(-50%, -50%); font-size: 1em;"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">星鉴</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-info-circle"></i>
+                    <span>简介</span></a>
+            </li>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">
+                工具
+            </div>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-fw fa-comments"></i>
+                    <span>选择检测语言</span>
+                </a>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">文本语言:</h6>
+                        <a class="collapse-item" href="javascript:void(0);" onclick="showInput('Chinese')">中文</a>
+                        <a class="collapse-item" href="javascript:void(0);" onclick="showInput('English')">英文（测试版本）</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                    aria-expanded="true" aria-controls="collapseUtilities">
+                    <i class="fas fa-fw fa-file-alt"></i>
+                    <span>文件检测结果</span>
+                </a>
+                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded" id="usageInstructions">
+                        <h6 class="collapse-header">文件:</h6>
+                    </div>
+                </div>
+            </li>
+
+            <div class="sidebar-heading">
+                其他
+            </div>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsage"
+                    aria-expanded="true" aria-controls="collapseUsage">
+                    <i class="fas fa-fw fa-book"></i>
+                    <span>常见问题</span>
+                </a>
+                <div id="collapseUsage" class="collapse" aria-labelledby="headingUsage" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">常见问题:</h6>
+                        <a class="collapse-item" href="./tools/README.html">使用说明</a>
+                    </div>
+                </div>
+            </li>
+            <hr class="sidebar-divider d-none d-md-block">
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <a class="navbar-brand" href="#" style="font-family: 'Nunito', sans-serif;">
+                        <h1 class="h3 mb-0 text-primary"
+                            style="font-weight: 900; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);">
+                            星鉴：多域多模型的机器生成文本检测系统
+                        </h1>
+                    </a>
+                    <ul class="navbar-nav ml-auto">
+                    </ul>
+                </nav>
+
+                <div class="container-fluid">
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12">
+                            <div class="card shadow mb-4" id="toolIntro">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">工具简介</h6>
+
+                                    <p>星鉴机器生成文本检测工具，主要用于识别和分析文本内容是否由大语言模型生成，支持中文和英文（英文功能正在测试中）两种语言的检测。</p>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-xl-8 col-lg-6">
+                            <div class="card shadow mb-4" id="inputArea" style="display: none;">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary" id="inputHeader">请输入文本</h6>
+                                </div>
+                                <div class="card-body position-relative">
+                                    <textarea id="textInput" rows="15" cols="50" class="form-control"
+                                        oninput="updateCharacterCount()"></textarea>
+                                    <div class="char-count" id="charCount">0/<span
+                                            style="font-size: 1.2em;">&infin;</span> characters</div>
+                                    <div class="button-container mt-3">
+                                        <textarea id="resultOutput" rows="1" cols="25" class="form-control mt-3"
+                                            readonly></textarea>
+                                        <button onclick="predict()" class="btn btn-primary" id="submitBtn">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                        <button onclick="triggerFileInput()" class="btn btn-primary" id="uploadBtn">
+                                            <i class="fas fa-upload"></i>
+                                        </button>
+                                        <input type="file" id="fileInput" class="custom-file-input"
+                                            onchange="handleFile()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4 col-lg-6" id="Analysis" style="display: none">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">文本分析结果</h6>
+                                </div>
+                                <div class="card-body">
+                                    <!-- 饼状图可视化 -->
+                                    <div class="chart-pie pt-4 pb-2">
+                                        <canvas id="myPieChart"></canvas>
+                                    </div>
+                                    <div class="mt-4 text-center small">
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color: #c3edda;"></i> 人类
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color: #fff3cd;"></i> 中度疑似机器生成
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle" style="color: #f9d7da;"></i> 高度疑似机器生成
+                                        </span>
+                                    </div>
+                                    <hr>
+                                    <div class="styled-text">
+                                        绿色：机器生成概率小于等于10%
+                                        <br>
+                                        黄色：机器生成概率大于10%，小于60%
+                                        <br>
+                                        红色：机器生成概率大于等于60%
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-xl-12 col-lg-6" id="TextDeepAnalysis" style="display: none">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">文本深度分析</h6>
+                                </div>
+                                <!--实时渲染文本-->
+                                <div class="card-body">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>星鉴：多域多模型的机器生成文本检测系统</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</body>
+
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="vendor/chart.js/Chart.min.js"></script>
+<script>
+    let fileList = [];  // 存储链接
+    let filename = [];  // 存储文件名
+
+    // 图表函数
+    let myPieChart; // 全局变量存储图表实例
+
+    function initializeChart(a, b, c) {
+        var ctx = document.getElementById("myPieChart");
+
+        // 检查并销毁之前的图表实例
+        if (myPieChart) {
+            myPieChart.destroy();
+        }
+
+        myPieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ["高度疑似", "中度疑似", "人类"],
+                datasets: [{
+                    data: [a, b, c],
+                    backgroundColor: ['#f8d7da', '#fff3cd', '#d4edda'],
+                    hoverBackgroundColor: ['#f8d7da', '#fff3cd', '#d4edda'], // 设置悬停时的背景颜色与默认颜色一致
+                    hoverBorderColor: ['#f8d7da', '#fff3cd', '#d4edda'] // 设置悬停时的边框颜色与默认颜色一致
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10
+                },
+                legend: {
+                    display: false
+                },
+                cutoutPercentage: 75,
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                },
+                hover: {
+                    mode: null // 禁用悬停效果
+                }
+            }
+        });
+    }
+
+    function showInput(language) {
+        const inputArea = document.getElementById('inputArea');
+        const toolIntro = document.getElementById('toolIntro');
+        const analysis = document.getElementById('Analysis');
+        const textDeepAnalysis = document.getElementById('TextDeepAnalysis');
+        const inputHeader = document.getElementById('inputHeader');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (inputArea) inputArea.style.display = 'block';
+        if (toolIntro) toolIntro.style.display = 'none';
+        if (analysis) analysis.style.display = 'block';
+        if (textDeepAnalysis) textDeepAnalysis.style.display = 'block';
+        if (inputHeader) {
+            if (language === 'Chinese') {
+                inputHeader.innerText = '请输入中文文本';
+                selectedLanguage = 'zh'; // 设置语言为中文
+                if (submitBtn) submitBtn.onclick = function () { predict('zh'); };
+            } else {
+                inputHeader.innerText = '请输入英文文本';
+                selectedLanguage = 'en'; // 设置语言为英文
+                if (submitBtn) submitBtn.onclick = function () { predict('en'); };
+            }
+        }
+
+        // 初始化图表
+        initializeChart(0, 0, 100);
+
+        // 关闭弹窗
+        $('#collapseTwo').collapse('hide');
+    }
+
+
+
+    // 实时字符计数
+    function updateCharacterCount() {
+        var textInput = document.getElementById('textInput');
+        var charCount = textInput.value.length;
+        var charCountDisplay = document.getElementById('charCount');
+        charCountDisplay.innerHTML = charCount + '/<span style="font-size: 1.2em;">&infin;</span> characters';
+    }
+
+    // 折叠按钮实现
+    $(document).ready(function () {
+        "use strict";
+
+        $("#sidebarToggle, #sidebarToggleTop").on("click", function (e) {
+            $("body").toggleClass("sidebar-toggled");
+            $(".sidebar").toggleClass("toggled");
+            if ($(".sidebar").hasClass("toggled")) {
+                $(".sidebar .collapse").collapse("hide");
+            }
+        });
+
+        $(window).resize(function () {
+            if ($(window).width() < 768) {
+                $(".sidebar .collapse").collapse("hide");
+            }
+            if ($(window).width() < 480 && !$(".sidebar").hasClass("toggled")) {
+                $("body").addClass("sidebar-toggled");
+                $(".sidebar").addClass("toggled");
+                $(".sidebar .collapse").collapse("hide");
+            }
+        });
+
+        $("body.fixed-nav .sidebar").on("mousewheel DOMMouseScroll wheel", function (e) {
+            var o;
+            if ($(window).width() > 768) {
+                o = (e.originalEvent.wheelDelta || -e.originalEvent.detail);
+                this.scrollTop += 30 * (o < 0 ? 1 : -1);
+                e.preventDefault();
+            }
+        });
+
+        $(document).on("scroll", function () {
+            if ($(this).scrollTop() > 100) {
+                $(".scroll-to-top").fadeIn();
+            } else {
+                $(".scroll-to-top").fadeOut();
+            }
+        });
+
+        $(document).on("click", "a.scroll-to-top", function (e) {
+            var o = $(this);
+            $("html, body").stop().animate({
+                scrollTop: $(o.attr("href")).offset().top
+            }, 1000, "easeInOutExpo");
+            e.preventDefault();
+        });
+    });
+
+    function formatDetectionTime(ms) {
+        if (ms < 1000) {
+            return ms + "毫秒";
+        } else {
+            const seconds = (ms / 1000).toFixed(2);
+            return seconds + "秒";
+        }
+    }
+
+    function predict(language) {
+        const textInput = document.getElementById('textInput');
+        const resultOutput = document.getElementById('resultOutput');
+        if (!textInput || !resultOutput) return;
+
+        const text = textInput.value;
+        if (!text.trim()) {
+            alert('文本不能为空');
+            return;
+        }
+        resultOutput.value = '正在检测文本中，请稍候...';
+
+        const startTime = new Date().getTime();
+
+        fetch('http://127.0.0.1:5000/text', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ language: language, text: text })  // 传递统一的语言参数
+        })
+            .then(response => response.json())
+            .then(data => {
+                const deepAnalysisCardBody = document.querySelector('#TextDeepAnalysis .card-body');
+                if (deepAnalysisCardBody) {
+                    deepAnalysisCardBody.innerHTML = ''; // 清空之前的内容
+
+                    // 初始化统计变量
+                    let sum = 0;
+                    let high = 0;
+                    let mix = 0;
+                    let low = 0;
+
+                    // 遍历分析结果，更新统计数据
+                    data.analysis.forEach(item => {
+                        const span = document.createElement('span');
+                        const indentedText = '  ' + item.text.replace(/\n/g, '\n  '); // 替换换行符并在前面添加两格空格
+
+                        span.textContent = indentedText;
+                        if (item.ai_prob > 0.6) {
+                            span.style.backgroundColor = '#f9d7da'; // 红色背景（AI生成概率高）
+                            high += item.word_count;
+                        } else if (item.ai_prob > 0.1) {
+                            span.style.backgroundColor = '#fff3cd'; // 黄色背景（混合）
+                            mix += item.word_count;
+                        } else {
+                            span.style.backgroundColor = '#c3edda'; // 绿色背景（人类写作）
+                            low += item.word_count;
+                        }
+                        sum += item.word_count;
+                        deepAnalysisCardBody.appendChild(span);
+                        deepAnalysisCardBody.appendChild(document.createElement('br')); // 添加换行符
+                    });
+
+                    // 更新环形图
+                    initializeChart(100 * high / sum, 100 * mix / sum, 100 * low / sum);
+
+                    const endTime = new Date().getTime();
+
+                    const detectionTime = endTime - startTime;
+
+                    const formattedTime = formatDetectionTime(detectionTime);
+
+                    resultOutput.value = '预测结果: ' + '检测耗时' + formattedTime + '，' + data.result;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultOutput.value = '检测失败，请稍后重试';
+            });
+    }
+
+
+
+
+    function triggerFileInput() {
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) fileInput.click();
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        attachFileLinkEventHandlers();
+    });
+
+    // 函数：处理文件链接点击事件
+    function attachFileLinkEventHandlers() {
+        const fileLinks = document.querySelectorAll('.file-link');
+        fileLinks.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                const filename = event.target.getAttribute('data-filename');
+                openFileOnServer(filename);
+            });
+        });
+    }
+
+    function openFileOnServer(filename) {
+        fetch(`http://127.0.0.1:5000/open_file`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ filename: filename })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('File opened successfully on the server');
+                } else {
+                    console.error('Error opening file on the server');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function handleFile() {
+        const fileInput = document.getElementById('fileInput');
+        if (!fileInput) return;
+
+        const file = fileInput.files[0];
+        const allowedTypes = ["text/plain", "application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "image/png", "image/jpeg"];
+        const resultOutput = document.getElementById('resultOutput');
+
+        if (!file) {
+            if (resultOutput) resultOutput.value = 'No file selected.';
+            return;
+        }
+
+        const fileName = file.name.split('\\').pop().split('/').pop().toLowerCase();
+        if (filename.includes(fileName)) {
+            alert('文件已经上传');
+            fileInput.value = '';
+            return;
+        }
+
+        if (!allowedTypes.includes(file.type)) {
+            alert('只能上传 pdf、txt、docx 或图片文件');
+            fileInput.value = '';
+            return;
+        } else {
+            var formData = new FormData();
+            formData.append('file', file);
+            formData.append('language', selectedLanguage); // 传递语言参数
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://127.0.0.1:5000/config/upload', true);
+
+            xhr.onloadstart = function () {
+                if (resultOutput) resultOutput.value = '正在处理文件中，请稍候...';
+            };
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var data = JSON.parse(xhr.responseText);
+                        if (data.extracted_text) {
+                            document.getElementById('textInput').value = data.extracted_text;
+                            resultOutput.value = 'OCR识别完成，请检查并编辑文本。';
+                        } else if (data.download_url) {
+                            if (resultOutput) resultOutput.value = '检测完成，请在文件检测结果中查看';
+                            var downloadLink = `<a class="collapse-item file-link" href="javascript:void(0);" data-filename="${file.name}">${file.name}</a>`;
+                            fileList.push(downloadLink);
+                            filename.push(fileName);
+                            const usageInstructions = document.getElementById('usageInstructions');
+                            if (usageInstructions) {
+                                usageInstructions.innerHTML = `<h6 class="collapse-header">文件:</h6>${fileList.join('<br>')}`;
+                            }
+                            attachFileLinkEventHandlers();
+                        } else {
+                            if (resultOutput) resultOutput.value = '文件上传失败';
+                        }
+                    } else {
+                        if (resultOutput) resultOutput.value = '文件上传失败';
+                    }
+                }
+            };
+
+            xhr.onloadend = function () {
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                if (loadingIndicator) loadingIndicator.style.display = 'block';
+            };
+
+            xhr.send(formData);
+        }
+
+        fileInput.value = '';
+    }
+
+
+
+    function showInstructions() {
+        const usageInstructions = document.getElementById('usageInstructions');
+        const inputArea = document.getElementById('inputArea');
+        const analysis = document.getElementById('Analysis');
+        const textDeepAnalysis = document.getElementById('TextDeepAnalysis');
+        const backButton = document.getElementById('backButton');
+
+        if (usageInstructions) usageInstructions.style.display = 'block';
+        if (inputArea) inputArea.style.display = 'none';
+        if (analysis) analysis.style.display = 'none';
+        if (textDeepAnalysis) textDeepAnalysis.style.display = 'none';
+        if (backButton) backButton.style.display = 'block';
+    }
+
+    function hideInstructions() {
+        const usageInstructions = document.getElementById('usageInstructions');
+        const inputArea = document.getElementById('inputArea');
+        const analysis = document.getElementById('Analysis');
+        const textDeepAnalysis = document.getElementById('TextDeepAnalysis');
+        const backButton = document.getElementById('backButton');
+
+        if (usageInstructions) usageInstructions.style.display = 'none';
+        if (inputArea) inputArea.style.display = 'block';
+        if (analysis) analysis.style.display = 'block';
+        if (textDeepAnalysis) textDeepAnalysis.style.display = 'block';
+        if (backButton) backButton.style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        attachFileLinkEventHandlers();
+
+        // 新增返回按钮事件绑定
+        const backButton = document.getElementById('backButton');
+        if (backButton) {
+            backButton.addEventListener('click', hideInstructions);
+        }
+    });
+
+    function attachFileLinkEventHandlers() {
+        const fileLinks = document.querySelectorAll('.file-link');
+        fileLinks.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                const filename = event.target.getAttribute('data-filename');
+                openFileOnServer(filename);
+            });
+        });
+    }
+
+    function openFileOnServer(filename) {
+        fetch(`http://127.0.0.1:5000/open_file`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ filename: filename })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('File opened successfully on the server');
+                } else {
+                    console.error('Error opening file on the server');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+<button id="backButton"
+    style="display:none; padding: 10px 20px; font-size: 16px; background-color: #4e73df; color: white; border: none; border-radius: 5px; cursor: pointer; position: fixed; top: 20px; left: 20px; z-index: 1000;">返回检测页面</button>
+
+</html>

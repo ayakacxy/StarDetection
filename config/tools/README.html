@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width initial-scale=1'>
+    <style type='text/css'>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-top: 1rem;
+        }
+
+        button {
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        img {
+            max-width: 75%;
+            height: auto;
+        }
+
+        /* 限制图片大小 */
+        .page {
+            display: none;
+        }
+
+        /* 默认隐藏所有页面内容 */
+        .page.active {
+            display: block;
+        }
+
+        /* 仅显示当前活跃页面内容 */
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        pre {
+            position: relative;
+            background: #f6f8fa;
+            border: 1px solid #d1d5da;
+            border-radius: 6px;
+            overflow: hidden;
+            /* 改为 hidden 以确保复制按钮不超出框 */
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 16px;
+            /* 增加字体大小 */
+            line-height: 1.5;
+            padding: 0;
+            margin: 0;
+        }
+
+        pre code {
+            display: block;
+            white-space: pre;
+            padding: 16px;
+            margin: 0;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            cursor: pointer;
+            background: #0366d6;
+            color: white;
+            border: none;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .copy-btn:hover {
+            background: #025bb5;
+        }
+
+        code {
+            background-color: #f6f8fa;
+            padding: 0;
+            font-family: Consolas, "Courier New", monospace;
+        }
+    </style>
+    <title>README</title>
+    <script type="text/javascript">
+        function goBack() {
+            window.history.back();
+        }
+
+        function copyToClipboard(element) {
+            var temp = document.createElement("textarea");
+            temp.value = element.querySelector('code').textContent.replace(/<br>/g, '\n');
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+            alert("代码已复制到剪贴板");
+        }
+
+        function showPage(pageNumber) {
+            var pages = document.querySelectorAll('.page');
+            pages.forEach(function (page, index) {
+                page.classList.remove('active');
+                if (index + 1 === pageNumber) {
+                    page.classList.add('active');
+                }
+            });
+            window.scrollTo(0, 0); // 新增的代码，使页面滚动到顶部
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <button onclick="goBack()">返回到原网页</button>
+
+        <!-- 分页内容 -->
+        <div class="page active" id="page1">
+            <h1>星鉴—多域多模型的机器生成文本检测系统</h1>
+            <h2>系统介绍</h2>
+            <p>星鉴项目旨在实现对机器生成文本的检测。通过Zero-Shot和监督学习结合的方法，星鉴可以准确高效地区分多领域多模型的人类文本和机器生成文本。本项目适用于需要识别AI生成内容的各类应用场景。</p>
+
+            <h3>系统架构</h3>
+            <p>本项目基于Flask架构的前后端交互设计，用户通过前端页面交互，后端处理前端返回的文本或者文件，并将结果返回前端展示。</p>
+            <p><img src="figures/系统架构图.jpg" alt="星鉴系统架构图"></p>
+        </div>
+
+        <div class="page" id="page2">
+            <h3>系统功能</h3>
+            <p>系统支持中英文两种语言检测，同时支持用户上传文件进行检测，文件格式支持包括.txt, .docx, .pdf</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>功能列表</th>
+                        <th>功能描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>文本检测功能</td>
+                        <td>用户在客户端输入一段文本，检测完成后会返回一个这段文本由机器生成的概率</td>
+                    </tr>
+                    <tr>
+                        <td>文件检测功能</td>
+                        <td>长文本用户可以上传 PDF, DOCX 和 TXT 格式的文件，检测完成后会返回标注过的文件</td>
+                    </tr>
+                    <tr>
+                        <td>深度文本分析</td>
+                        <td>文本检测完成会告知用户各个段落由机器生成的概率，并标识各个成分的占比</td>
+                    </tr>
+                    <tr>
+                        <td>文件标注功能</td>
+                        <td>根据不同段落评估概率，标注高亮，并在侧面标注生成概率（PDF, DOCX）或直接标注概率（TXT）</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2>系统部署</h2>
+            <p>本项目支持源代码部署以及Windows平台可执行程序.exe以及Android平台安装包.apk的安装。</p>
+
+            <h3>源代码部署</h3>
+            <pre>
+                <button class="copy-btn" onclick="copyToClipboard(this.parentElement)">复制</button>
+                <code>git clone https://github.com/ayakacxy/star_detection.git<br>cd star_detection</code>
+            </pre>
+            <p>本地已经安装Anaconda, 那么创建一个新的环境并激活</p>
+            <pre>
+                <button class="copy-btn" onclick="copyToClipboard(this.parentElement)">复制</button>
+                <code>conda create --name star python=3.10<br>conda activate star</code>
+            </pre>
+            <p>安装对应的依赖</p>
+            <pre>
+                <button class="copy-btn" onclick="copyToClipboard(this.parentElement)">复制</button>
+                <code>pip install -r requirements</code>
+            </pre>
+            <p>运行项目</p>
+            <pre>
+                <button class="copy-btn" onclick="copyToClipboard(this.parentElement)">复制</button>
+                <code>python app.py</code>
+            </pre>
+        </div>
+
+        <div class="page" id="page3">
+            <h4>注意事项</h4>
+            <ol>
+                <li>项目运行的日志输出存储在config/log.jsonl文件中，对应的报错信息可以检查日志文件进行调试。</li>
+                <li>部分功能需要使用到Windows自带的字体文件，如果报错可以修改成本机自带的字体。</li>
+                <li>DOCX文件的检测需要本地存在microsoft office，如果未安装，建议自行把DOCX文件转换为PDF文件或者直接复制对应的文本进行检测。</li>
+            </ol>
+            <h2> Windows平台可执行程序安装</h2>
+            <ul>
+                <li>
+                    <p>先从该链接下载我们的可执行程序<a href='https://rec.ustc.edu.cn/share/45b5f090-4bfa-11ef-81e7-0fc80e73d6c5'>星鉴</a></p>
+                </li>
+                <li>
+                    <p>下载之后双击<code>StarDetection.exe</code>进行安装</p><img src="figures/安装.png" alt="安装">
+                </li>
+                <li>
+                    <p>选择安装语言</p><img src="figures/选择语言.png" alt="选择语言">
+                </li>
+                <li>
+                    <p>用户协议以及安装位置选择，默认安装在<code>D</code>盘</p><img src="figures/用户协议.png" alt="选择语言"><img src="figures/选择安装路径.png" alt="选择安装路径">
+                </li>
+                <li>
+                    <p>创建快捷方式，并运行星鉴</p><img src="figures/创建快捷方式.png" alt="创建快捷方式"><img src="figures/运行星鉴.png" alt="运行星鉴">
+                </li>
+            </ul>
+            <p>安装成功运行结果如下所示</p><img src="figures/成功运行.png" alt="成功运行">
+            <h3>网页端访问</h3>
+            <p>直接输入网址即可访问</p>
+            <h3> Android端安装</h3>
+            <p>在该链接下载，安装即可。</p>
+            <h2>使用指南</h2>
+            <p>所有平台都是基于同一套操作以及交互逻辑，所以这里仅以本地为示范</p>
+        </div>
+
+        <div class="pagination">
+            <button onclick="showPage(1)">1</button>
+            <button onclick="showPage(2)">2</button>
+            <button onclick="showPage(3)">3</button>
+        </div>
+    </div>
+</body>
+
+</html>
