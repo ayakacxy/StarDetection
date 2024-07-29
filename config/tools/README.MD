@@ -9,7 +9,7 @@
 
 本项目基于`Flask`架构的前后端交互设计，用户通过前端页面交互，后端处理前端返回的文本或者文件，并将结果返回前端展示。
 
-![星鉴系统架构图](figures\system_architecture_diagram.jpg)
+![](figures\system_architecture_diagram.jpg)
 
 ### 系统功能
 
@@ -73,7 +73,7 @@ cd  star_detection
 
 最后的运行结果如下图所示
 
-![运行结果](figures\execution_result.png)
+![](figures\execution_result.png)
 
 #### 注意事项
 
@@ -83,31 +83,31 @@ cd  star_detection
 
 ###  `Windows`平台可执行程序安装
 
-- 先从该链接下载我们的可执行程序[星鉴](https://rec.ustc.edu.cn/share/45b5f090-4bfa-11ef-81e7-0fc80e73d6c5)
+- 先从该链接下载我们的可执行程序[](https://rec.ustc.edu.cn/share/45b5f090-4bfa-11ef-81e7-0fc80e73d6c5)
 
 - 下载之后双击`StarDetection.exe`进行安装
 
-  ![安装](figures/installation.png)
+  ![](figures/installation.png)
 
 - 选择安装语言
 
-  ![选择语言](figures\select_language.png)
+  ![](figures\select_language.png)
 
 - 用户协议以及安装位置选择，默认安装在`D`盘
 
-  ![选择语言](figures\select_language.png)
+  ![](figures\select_language.png)
 
-  ![选择安装路径](figures\select_installation_path.png)
+  ![](figures\select_installation_path.png)
 
 - 创建快捷方式，并运行星鉴
 
-  ![选择语言](figures\create_shortcut.png)
+  ![](figures\create_shortcut.png)
 
-  ![运行星鉴](figures\run_star_detection.png)
+  ![](figures\run_star_detection.png)
 
 安装成功运行结果如下所示
 
-![成功运行](figures\successful_execution.png)
+![](figures\successful_execution.png)
 
 ### 网页端访问
 
