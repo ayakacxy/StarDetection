@@ -9,7 +9,7 @@
 
 本项目基于`Flask`架构的前后端交互设计，用户通过前端页面交互，后端处理前端返回的文本或者文件，并将结果返回前端展示。
 
-![](figures\system_architecture_diagram.jpg)
+![1](figures\system_architecture_diagram.jpg)
 
 ### 系统功能
 
@@ -73,7 +73,7 @@ cd  star_detection
 
 最后的运行结果如下图所示
 
-![](figures\execution_result.png)
+![2](figures\execution_result.png)
 
 #### 注意事项
 
@@ -87,27 +87,27 @@ cd  star_detection
 
 - 下载之后双击`StarDetection.exe`进行安装
 
-  ![](figures/installation.png)
+  ![3](figures/installation.png)
 
 - 选择安装语言
 
-  ![](figures\select_language.png)
+  ![4](figures\select_language.png)
 
 - 用户协议以及安装位置选择，默认安装在`D`盘
 
-  ![](figures\select_language.png)
+  ![5](figures\select_language.png)
 
-  ![](figures\select_installation_path.png)
+  ![6](figures\select_installation_path.png)
 
 - 创建快捷方式，并运行星鉴
 
-  ![](figures\create_shortcut.png)
+  ![7](figures\create_shortcut.png)
 
-  ![](figures\run_star_detection.png)
+  ![8](figures\run_star_detection.png)
 
 安装成功运行结果如下所示
 
-![](figures\successful_execution.png)
+![9](figures\successful_execution.png)
 
 ### 网页端访问
 
