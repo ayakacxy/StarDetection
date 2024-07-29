@@ -102,7 +102,7 @@ cd  star_detection
 
 - 创建快捷方式，并运行星鉴
 
-  ![选择语言](figures\创建快捷方式.png)
+  ![选择语言](figures\desktopicon.png)
 
   ![运行星鉴](figures\运行星鉴.png)
 
