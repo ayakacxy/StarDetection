@@ -111,7 +111,7 @@ cd  star_detection
 
 ### 网页端访问
 
-直接输入网址即可访问
+直接输入网址 https://xingjian.qnlab-ustc.com/index.html 即可访问
 
 ### `Android`端安装
 
