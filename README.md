@@ -83,7 +83,7 @@ cd  star_detection
 
 ###  `Windows`平台可执行程序安装
 
-- 先从该链接下载我们的可执行程序[](https://rec.ustc.edu.cn/share/45b5f090-4bfa-11ef-81e7-0fc80e73d6c5)
+- 先从该链接下载我们的可执行程序[星鉴](https://rec.ustc.edu.cn/share/45b5f090-4bfa-11ef-81e7-0fc80e73d6c5)
 
 - 下载之后双击`StarDetection.exe`进行安装
 
@@ -115,8 +115,7 @@ cd  star_detection
 
 ### `Android`端安装
 
-在该链接下载，安装即可。
-
+存在bug，这里不公开源代码和应用程序
 ## 使用指南
 
 所有平台都是基于同一套操作以及交互逻辑，所以这里仅以本地为示范
